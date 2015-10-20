@@ -1,12 +1,14 @@
 #include <stdint.h>
 
-typedef char byte;
+#ifndef DATA
+
+#define DATA
 
 typedef struct {
-  byte duration;
-  byte intensity_start;
-  byte intensity_finish;
-  byte bitmask;
+  char duration;
+  char intensity_start;
+  char intensity_finish;
+  char bitmask;
 } Note;
 
 /* pointer to program memory */
@@ -34,8 +36,8 @@ typedef struct {
  */
 
 typedef struct {
-  byte channelMask;
-  byte mode;
+  char channelMask;
+  char mode;
   Channel *channels[8];
 } Composition;
 
@@ -50,4 +52,6 @@ typedef struct {
 
 /* loader expects raw.h to include a program */
 Data *load_data();
+
+#endif
 
