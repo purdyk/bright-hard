@@ -16,7 +16,7 @@ typedef struct {
 typedef struct {
   uint16_t count;
   uint16_t current;
-  Note *notes[0];
+  Note *notes;
 } Bar;
 
 /* 
@@ -27,7 +27,7 @@ typedef struct {
 typedef struct {
   uint16_t count;
   uint16_t current;
-  Bar *bars[0];
+  Bar **bars;
 } Channel;
 
 /*
@@ -36,9 +36,9 @@ typedef struct {
  */
 
 typedef struct {
-  char channelMask;
+  char count;
   char mode;
-  Channel *channels[8];
+  Channel **channels;
 } Composition;
 
 /*
@@ -47,11 +47,12 @@ typedef struct {
 
 typedef struct {
   uint16_t programCount;
-  Composition programs[0];
+  Composition *programs;
 } Data;
 
 /* loader expects raw.h to include a program */
 Data *load_data();
+void reset_program(Composition* prog);
 
 #endif
 

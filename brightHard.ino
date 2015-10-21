@@ -16,6 +16,8 @@
 #define STATUS_1 10
 #define STATUS_2 13
 
+Data *data;
+
 void setup() {
    // Initialize the pins as outputs
   pinMode(A, OUTPUT);  
@@ -36,6 +38,8 @@ void setup() {
   pinMode(1, INPUT);
   pinMode(20, INPUT);
   pinMode(19, INPUT);
+
+  data = load_data();
 }
 
 /* Stub this for now */
@@ -43,11 +47,10 @@ void loop() {
   command();
 }
 
-
 void command() {
   for (int i = A; i < E; i++) {
     digitalWrite(i, HIGH);
-    delay(200);
+    delay(25);
     digitalWrite(i, LOW);
   }
 }
