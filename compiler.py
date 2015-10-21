@@ -3,6 +3,7 @@
 import sys
 import struct
 import json
+import copy
 
 
 class Compiler:
@@ -28,8 +29,13 @@ class Compiler:
         self.note_format = "BBBB"
         self.bar_format = "HH"
 
+
+
         self.mods = {
-            "rev": self.rev
+            "rev": self.rev,
+            "inv": self.inv,
+            "exp": self.exp,
+            "lsh": self.lsh,
         }
 
         self.compile_steps = [self.make_bars, self.make_mods, self.make_programs];
@@ -120,13 +126,69 @@ class Compiler:
         else:
             return []
 
+        '''
+        inv(bar) (flip bits on all of the notes)
+rev(bar) (reverse notes of the sourece bar)
+exp(bar, fac) (expand the bar by the factor)
+lsh(bar, fac) (left shift the bits by factor)
+'''
+
     def rev(self, source, args):
         count = source["count"]
         start = source["start"]
         return self.notes[start:start+count][::-1]
 
     def inv(self, source, args):
-        return None
+        out = []
+        count = source["count"]
+        start = source["start"]
+
+        for item in self.notes[start:start+count]:
+            i2 = copy.copy(item)
+            i2[3] = (255 & ~i2[3])
+            out.append(i2)
+
+        return out
+
+    def exp(self, source, args):
+        out = []
+        count = source["count"]
+        start = source["start"]
+
+        for item in self.notes[start:start+count]:
+            i2 = copy.copy(item)
+            i2[0] += args[0]
+            out.append(i2)
+
+        return out
+
+    def lsh(self, source, args):
+        out = []
+        count = source["count"]
+        start = source["start"]
+
+        for item in self.notes[start:start+count]:
+            i2 = copy.copy(item)
+            i2[3] = self.llsh(i2[3], args[0])
+            out.append(i2)
+
+        return out
+
+    def llsh(self, value, amount):
+        if amount == 0:
+            return value
+        elif amount > 0:
+            intermediary = value << amount
+            ret = intermediary & 255
+            ret &= ((intermediary >> 8) & 255)
+            return ret
+        else:
+            intermediary = value
+            while amount < 0:
+                inc = intermediary & 1
+                intermediary = (intermediary >> 1) & (inc << 7)
+                amount += 1
+            return intermediary
 
     def make_programs(self):
         incoming_progs = self.data["programs"]
