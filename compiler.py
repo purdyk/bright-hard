@@ -103,6 +103,7 @@ class Compiler:
         mod_args = mod_args.rstrip(")").split(",")
         mod_source = self.bars[mod_args[0]]
         mod_args = mod_args[1:]
+        mod_args = map(lambda x: int(x), mod_args)
 
         notes = self.map_mod(mod_name, mod_source, mod_args)
 
