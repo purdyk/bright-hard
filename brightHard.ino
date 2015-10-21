@@ -42,18 +42,29 @@ void setup() {
     pinMode(19, INPUT);
 
     data = load_data();
-    program = &data->programs[0];
+    program = &data->programs[1];
 }
 
 void loop() {
     load_mask();
     write();
+    advance();
     delay(100);
 }
 
 void load_mask() {
     mask = 0;
-    int i,j;
+    int i;
+    for (i = 0; i < program->count; i++) {
+        Channel *chan = program->channels[i];
+        Bar *bar = chan->bars[chan->current];
+        mask |= bar->notes[bar->current].bitmask;
+        bar->current += 1;
+    }
+}
+
+void advance() {
+    int i;
     for (i = 0; i < program->count; i++) {
         Channel *chan = program->channels[i];
         Bar *bar = chan->bars[chan->current];
@@ -63,10 +74,7 @@ void load_mask() {
             if (chan->current == chan->count) {
                 chan->current = 0;
             }
-            bar = chan->bars[chan->current];
         }
-        mask |= bar->notes[bar->current].bitmask;
-        bar->current += 1;
     }
 }
 
