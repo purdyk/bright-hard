@@ -25,7 +25,7 @@ Data *load_data() {
     Bar *bars = (Bar *) malloc(sizeof(Bar) * BAR_COUNT);
 
     Channel *channels = (Channel *) malloc(sizeof(Channel) * CHANNEL_COUNT);
-    Composition *programs = (Composition *) malloc(sizeof(Composition) * PROGRAM_COUNT);
+    Program *programs = (Program *) malloc(sizeof(Program) * PROGRAM_COUNT);
 
     for (i = 0; i < BAR_COUNT; i++) {
         bars[i].count = raw_bars[i].count;
@@ -65,7 +65,7 @@ Data *load_data() {
     return data;
 }
 
-void reset_program(Composition *prog) {
+void reset_program(Program *prog) {
     int i,j;
     for (i = 0; i < prog->count; i++) {
         Channel *chan = prog->channels[i];

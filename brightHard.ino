@@ -17,7 +17,7 @@
 #define STATUS_2 13
 
 Data *data;
-Composition *program;
+Program *program;
 char mask;
 
 void setup() {

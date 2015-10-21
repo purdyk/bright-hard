@@ -39,7 +39,7 @@ typedef struct {
     char count;
     char mode;
     Channel **channels;
-} Composition;
+} Program;
 
 /*
  * healper loadComposition maps all channels to actual channels
@@ -47,13 +47,13 @@ typedef struct {
 
 typedef struct {
     uint16_t programCount;
-    Composition *programs;
+    Program *programs;
 } Data;
 
 /* loader expects raw.h to include a program */
 Data *load_data();
 
-void reset_program(Composition *prog);
+void reset_program(Program *prog);
 
 #endif
 
