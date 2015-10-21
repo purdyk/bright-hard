@@ -16,7 +16,7 @@
 #define STATUS_1 10
 #define STATUS_2 13
 
-#define MILLIS_PER_LOOP 16 // around 120 bpm.  good for testing for now.
+#define BPM 120
 
 Data *data;
 Program *program;
@@ -40,27 +40,45 @@ void setup() {
     pinMode(STATUS_2, OUTPUT);
 
     // Utilize a few more pins for input
-    pinMode(1, INPUT);
-    pinMode(20, INPUT);
-    pinMode(19, INPUT);
+//    pinMode(1, INPUT);
+//    pinMode(20, INPUT);
+//    pinMode(19, INPUT);
 
+    // Load and prepare data
     data = load_data();
     program = &data->programs[1];
     reset_program(program);
+
+    // Using a Timer at (1 / (bpm / 60)) / 32
+    // set timer interrupt at 64Hz
+    TCCR0A = 0;// set entire TCCR1A register to 0
+    TCCR0B = 0;// same for TCCR1B
+    TCNT0 = 0;//initialize counter value to 0
+
+    // set compare match register for 64hz increments
+    OCR0A = 243;// = (16 * (10**6)) / (64 * 1024) - 1 (must be <65536)
+
+    // turn on CTC mode
+    TCCR0B |= (1 << WGM02);
+
+    // Set CS12 and CS10 bits for 1024 prescaler
+    TCCR0B |= (1 << CS02) | (1 << CS00);
+
+    // enable timer compare interrupt
+    TIMSK0 |= (1 << OCIE0A);
 }
 
-void loop() {
-
-    loopStart = millis();
+ISR (TIMER0_COMPA_vect) { // Timer 0
 
     if (program->dirty) {
         load_mask();
         write_mask();
     }
     advance_program(program);
+}
 
-    /* Hacky inaccurate delay code */
-    delay(MILLIS_PER_LOOP - (millis() - loopStart));
+void loop() {
+    /* :D */
 }
 
 void load_mask() {
@@ -75,7 +93,7 @@ void load_mask() {
 void write_mask() {
     int i;
     for (i = FIRST; i < LOOP; i++) {
-        if (mask & 1<<(i - FIRST)) {
+        if (mask & 1 << (i - FIRST)) {
             digitalWrite(i, HIGH);
         } else {
             digitalWrite(i, LOW);
