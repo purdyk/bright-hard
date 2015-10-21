@@ -14,7 +14,7 @@ typedef struct {
 /* pointer to program memory */
 
 typedef struct {
-  uint16_t length;
+  uint16_t count;
   uint16_t current;
   Note *notes[0];
 } Bar;
@@ -25,7 +25,7 @@ typedef struct {
  */
 
 typedef struct {
-  uint16_t length;
+  uint16_t count;
   uint16_t current;
   Bar *bars[0];
 } Channel;

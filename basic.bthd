@@ -12,6 +12,18 @@
         [1,255,255,"......1."],
         [1,255,255,".......1"]
       ]
+    },
+    {
+      "name": "full_on",
+      "notes": [
+        [1,255,255,"11111111"]
+      ]
+    },
+    {
+      "name": "full_off",
+      "notes": [
+        [1,255,255,"........"]
+      ]
     }
   ],
   "mods": [
@@ -24,28 +36,26 @@
     {
       "mode": "overwrite",
       "channels": [
-        [
-          "spin_r"
-        ]
+        ["spin_r"]
       ]
     },
     {
       "mode": "overwrite",
       "channels": [
-        [
-          "spin_l"
-        ]
+        ["spin_l"]
       ]
     },
     {
       "mode": "overwrite",
       "channels": [
-        [
-          "spin_r"
-        ],
-        [
-          "spin_l"
-        ]
+        ["spin_r"],
+        ["spin_l"]
+      ]
+    },
+    {
+      "mode": "overwrite",
+      "channels": [
+        ["full_on", "full_off"]
       ]
     }
   ]

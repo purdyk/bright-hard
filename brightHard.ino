@@ -1,19 +1,36 @@
 #include "data.h"
 
+#define A  2
+#define B  3
+#define C  4
+#define D  5
+#define E  6
+#define F  7
+#define G  8
+#define H  9
+
+#define FIRST 2
+#define LAST 9
+#define LOOP 10
+
+#define STATUS_1 10
+#define STATUS_2 13
+
 void setup() {
-  // Initialize the pins as outputs
-  pinMode(2, OUTPUT);  // channel A  
-  pinMode(3, OUTPUT);  // channel B   
-  pinMode(4, OUTPUT);  // channel C
-  pinMode(5, OUTPUT);  // channel D    
-  pinMode(6, OUTPUT);  // channel E
-  pinMode(7, OUTPUT);  // channel F
-  pinMode(8, OUTPUT);  // channel G
-  pinMode(9, OUTPUT);  // channel H
+   // Initialize the pins as outputs
+  pinMode(A, OUTPUT);  
+  pinMode(B, OUTPUT); 
+  pinMode(C, OUTPUT);  
+  pinMode(D, OUTPUT);  
+  pinMode(E, OUTPUT); 
+  pinMode(7, OUTPUT); 
+  pinMode(G, OUTPUT);  
+  pinMode(H, OUTPUT); 
+  
   // We also have two status LEDs, pin 10 on the Escudo, 
   // and pin 13 on the Arduino itself
-  pinMode(10, OUTPUT);     
-  pinMode(13, OUTPUT); 
+  pinMode(STATUS_1, OUTPUT);     
+  pinMode(STATUS_2, OUTPUT); 
   
   // Utilize a few more pins for input
   pinMode(1, INPUT);
@@ -21,27 +38,17 @@ void setup() {
   pinMode(19, INPUT);
 }
 
+/* Stub this for now */
 void loop() {
   command();
-  step();
 }
+
 
 void command() {
-
+  for (int i = A; i < E; i++) {
+    digitalWrite(i, HIGH);
+    delay(200);
+    digitalWrite(i, LOW);
+  }
 }
 
-void step() {
-  
-}
-
-void speedUp() {
-
-}
-
-void speedDown() {
-
-}
-
-void compile() {
-
-}

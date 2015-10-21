@@ -14,12 +14,12 @@ typedef struct {
 } CompositionS;
 
 typedef struct {
-  uint16_t length;
+  uint16_t count;
   uint16_t noteOffset;
 } BarS;
 
 typedef struct {
-  uint16_t length;
+  uint16_t count;
   uint16_t bars[0];
 } ChannelS;
 
