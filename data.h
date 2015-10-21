@@ -5,18 +5,18 @@
 #define DATA
 
 typedef struct {
-  char duration;
-  char intensity_start;
-  char intensity_finish;
-  char bitmask;
+    char duration;
+    char intensity_start;
+    char intensity_finish;
+    char bitmask;
 } Note;
 
 /* pointer to program memory */
 
 typedef struct {
-  uint16_t count;
-  uint16_t current;
-  Note *notes;
+    uint16_t count;
+    uint16_t current;
+    Note *notes;
 } Bar;
 
 /* 
@@ -25,9 +25,9 @@ typedef struct {
  */
 
 typedef struct {
-  uint16_t count;
-  uint16_t current;
-  Bar **bars;
+    uint16_t count;
+    uint16_t current;
+    Bar **bars;
 } Channel;
 
 /*
@@ -36,9 +36,9 @@ typedef struct {
  */
 
 typedef struct {
-  char count;
-  char mode;
-  Channel **channels;
+    char count;
+    char mode;
+    Channel **channels;
 } Composition;
 
 /*
@@ -46,13 +46,14 @@ typedef struct {
  */
 
 typedef struct {
-  uint16_t programCount;
-  Composition *programs;
+    uint16_t programCount;
+    Composition *programs;
 } Data;
 
 /* loader expects raw.h to include a program */
 Data *load_data();
-void reset_program(Composition* prog);
+
+void reset_program(Composition *prog);
 
 #endif
 

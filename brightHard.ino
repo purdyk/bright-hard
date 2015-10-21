@@ -17,41 +17,51 @@
 #define STATUS_2 13
 
 Data *data;
+Composition *program;
+char mask;
 
 void setup() {
-   // Initialize the pins as outputs
-  pinMode(A, OUTPUT);  
-  pinMode(B, OUTPUT); 
-  pinMode(C, OUTPUT);  
-  pinMode(D, OUTPUT);  
-  pinMode(E, OUTPUT); 
-  pinMode(7, OUTPUT); 
-  pinMode(G, OUTPUT);  
-  pinMode(H, OUTPUT); 
-  
-  // We also have two status LEDs, pin 10 on the Escudo, 
-  // and pin 13 on the Arduino itself
-  pinMode(STATUS_1, OUTPUT);     
-  pinMode(STATUS_2, OUTPUT); 
-  
-  // Utilize a few more pins for input
-  pinMode(1, INPUT);
-  pinMode(20, INPUT);
-  pinMode(19, INPUT);
+    // Initialize the pins as outputs
+    pinMode(A, OUTPUT);
+    pinMode(B, OUTPUT);
+    pinMode(C, OUTPUT);
+    pinMode(D, OUTPUT);
+    pinMode(E, OUTPUT);
+    pinMode(7, OUTPUT);
+    pinMode(G, OUTPUT);
+    pinMode(H, OUTPUT);
 
-  data = load_data();
+    // We also have two status LEDs, pin 10 on the Escudo,
+    // and pin 13 on the Arduino itself
+    pinMode(STATUS_1, OUTPUT);
+    pinMode(STATUS_2, OUTPUT);
+
+    // Utilize a few more pins for input
+    pinMode(1, INPUT);
+    pinMode(20, INPUT);
+    pinMode(19, INPUT);
+
+    data = load_data();
+    composition = data.programs[0];
 }
 
 /* Stub this for now */
 void loop() {
-  command();
+    load_mask();
+    write();
+    delay(100);
 }
 
-void command() {
-  for (int i = A; i < E; i++) {
-    digitalWrite(i, HIGH);
-    delay(25);
-    digitalWrite(i, LOW);
-  }
+void load_mask() {
+    mask = 0;
+    for (int i = 0; i < program->count; i++) {
+
+    }
+}
+
+void write() {
+    for (int i = FIRST; i < LOOP; i++) {
+
+    }
 }
 
