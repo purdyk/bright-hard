@@ -4,24 +4,6 @@ import sys
 import struct
 import json
 
-'''
-static int PROGRAM_COUNT = 3;
-static int CHANNEL_COUNT = 2;
-static int BAR_COUNT = 1;
-
-static unsigned char NOTES[] = {
-  0xAA;
-}
-
-static unsigned char BARS[] = {
-}
-
-static unsigned char CHANNELS[] = {
-}
-
-static unsigned char PROGRAMS[] = {
-}
-'''
 
 class Compiler:
     def __init__(self):
@@ -163,17 +145,24 @@ class Compiler:
             for channel in channels:
                 key = "".join(channel)
                 if key not in self.channels:
-                    self.channels[key] = self.make_channel(channel)
+                    chan = self.make_channel(channel)
+                    self.channels[key] = chan
+                    self.channels_l.append(chan)
+
                 chan_idx.append(self.channels[key]["index"])
 
-            prog["channels"] = chan_idx
+            parsed_prog["channels"] = chan_idx
+
+            self.programs.append(parsed_prog)
 
         return None
 
     def make_channel(self, parsed):
-        chan = {}
-        chan["index"] = len(self.channels)
-        chan["length"] = len(parsed)
+        chan = {
+            "index": len(self.channels),
+            "count": len(parsed)
+        }
+
         bar_idx = []
         for bar in parsed:
             bar_idx.append(self.bars[bar]["index"])
@@ -181,7 +170,6 @@ class Compiler:
         chan["bars"] = bar_idx
 
         return chan
-
 
     def write(self, filename):
 
@@ -214,13 +202,20 @@ class Compiler:
 
     def generate_raw_channels(self):
         for chan in self.channels_l:
-            None
+            print chan
+            total = chan["count"] + 1
+            fmt = "B" * total
+            self.raw_channels += struct.pack(fmt, total - 1, *chan["bars"])
+
         return None
 
     def generate_raw_programs(self):
-        return None
+        for prog in self.programs:
+            print prog
+            total = prog["count"] + 1;
+            fmt = "B" * total
+            self.raw_progs += struct.pack(fmt, total - 1, *prog["channels"])
 
-    def generate_header_and_merge(self):
         return None
 
     def write_header(self, fh):
@@ -232,24 +227,24 @@ class Compiler:
     def write_raw_notes(self, fh):
         fh.write("static unsigned char NOTES[] = {\n")
         self.output_raw(fh, self.raw_notes)
-        fh.write("}\n\n")
+        fh.write("};\n\n")
         return None
 
     def write_raw_bars(self, fh):
         fh.write("static unsigned char BARS[] = {\n")
         self.output_raw(fh, self.raw_bars)
-        fh.write("}\n\n")
+        fh.write("};\n\n")
         return None
 
     def write_raw_channels(self, fh):
         fh.write("static unsigned char CHANNELS[] = {\n")
         self.output_raw(fh, self.raw_channels)
-        fh.write("}\n\n")
+        fh.write("};\n\n")
 
     def write_raw_programs(self, fh):
         fh.write("static unsigned char PROGRAMS[] = {\n")
         self.output_raw(fh, self.raw_progs)
-        fh.write("}\n\n")
+        fh.write("};\n\n")
         return None
 
     def output_raw(self, fh, data):
