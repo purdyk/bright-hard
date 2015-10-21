@@ -45,7 +45,6 @@ void setup() {
     program = &data->programs[0];
 }
 
-/* Stub this for now */
 void loop() {
     load_mask();
     write();
@@ -54,15 +53,31 @@ void loop() {
 
 void load_mask() {
     mask = 0;
-    int i;
+    int i,j;
     for (i = 0; i < program->count; i++) {
-
+        Channel *chan = program->channels[i];
+        Bar *bar = chan->bars[chan->current];
+        if (bar->current == bar->count) {
+            bar->current = 0;
+            chan->current += 1;
+            if (chan->current == chan->count) {
+                chan->current = 0;
+            }
+            bar = chan->bars[chan->current];
+        }
+        mask |= bar->notes[bar->current].bitmask;
+        bar->current += 1;
     }
 }
 
 void write() {
     int i;
     for (i = FIRST; i < LOOP; i++) {
+        if (mask & 1<<(i - FIRST)) {
+            digitalWrite(i, HIGH);
+        } else {
+            digitalWrite(i, LOW);
+        }
 
     }
 }

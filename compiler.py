@@ -75,7 +75,7 @@ class Compiler:
         str_mask = note[3]
 
         for i in range(0, 8):
-            if str_mask[-(i+1)] == "1":
+            if str_mask[i] == "1":
                 mask += 2**i
 
         self.notes.append([note[0], note[1], note[2], mask])
