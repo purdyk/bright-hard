@@ -78,7 +78,7 @@ class Compiler:
             if str_mask[i] == "1":
                 mask += 2**i
 
-        self.notes.append([note[0], note[1], note[2], mask])
+        self.notes.append([note[0] + 5, note[1], note[2], mask])
 
     def make_mods(self):
         incoming_mods = self.data["mods"]
@@ -204,7 +204,7 @@ class Compiler:
         for chan in self.channels_l:
             print chan
             total = chan["count"] + 1
-            fmt = "B" * total
+            fmt = "H" * total
             self.raw_channels += struct.pack(fmt, total - 1, *chan["bars"])
 
         return None
@@ -213,7 +213,7 @@ class Compiler:
         for prog in self.programs:
             print prog
             total = prog["count"] + 1;
-            fmt = "B" * total
+            fmt = "H" * total
             self.raw_progs += struct.pack(fmt, total - 1, *prog["channels"])
 
         return None

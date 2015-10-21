@@ -30,32 +30,31 @@ Data *load_data() {
     for (i = 0; i < BAR_COUNT; i++) {
         bars[i].count = raw_bars[i].count;
         bars[i].notes = &notes[raw_bars[i].noteOffset];
-        bars[i].current = 0;
     }
 
     int counter = 0;
     for (i = 0; i < CHANNEL_COUNT; i++) {
-        char cnt = CHANNELS[counter++];
-        //counter += sizeof(uint16_t);
-        channels[i].count = cnt;
-        channels[i].current = 0;
+        char cnt = CHANNELS[counter];
+        counter += sizeof(uint16_t);
+        channels[i].barCount = cnt;
         channels[i].bars = (Bar **) malloc(sizeof(Bar *) * cnt);
         for (j = 0; j < cnt; j++) {
-            channels[i].bars[j] = &bars[CHANNELS[counter++]];
-            //counter += sizeof(uint16_t);
+            channels[i].bars[j] = &bars[CHANNELS[counter]];
+            counter += sizeof(uint16_t);
         }
     }
 
     counter = 0;
     for (i = 0; i < PROGRAM_COUNT; i++) {
-        uint16_t cnt = PROGRAMS[counter++];
-        //counter += sizeof(uint16_t);
+        uint16_t cnt = PROGRAMS[counter];
+        counter += sizeof(uint16_t);
         programs[i].count = cnt;
         programs[i].mode = 0;
+        programs[i].dirty = 1;
         programs[i].channels = (Channel **) malloc(sizeof(Channel *) * cnt);
         for (j = 0; j < cnt; j++) {
-            programs[i].channels[j] = &channels[PROGRAMS[counter++]];
-            //counter += sizeof(uint16_t);
+            programs[i].channels[j] = &channels[PROGRAMS[counter]];
+            counter += sizeof(uint16_t);
         }
     }
 
@@ -65,15 +64,50 @@ Data *load_data() {
     return data;
 }
 
+void advance_program(Program *prog) {
+    int i;
+    prog->dirty = 0;
+    for (i = 0; i < prog->count; i++) {
+        prog->dirty |= advance_channel(prog->channels[i]);
+    }
+}
+
+char advance_channel(Channel *channel) {
+    channel->noteDuration--;
+    if (channel->noteDuration == 0) {
+        channel->currentNote++;
+
+        if (channel->currentNote == channel->noteCount) {
+            channel->currentNote = 0;
+            channel->currentBar++;
+
+            if (channel->currentBar == channel->barCount) {
+                channel->currentBar = 0;
+            }
+
+            channel->noteCount = channel->bars[channel->currentBar]->count;
+        }
+        channel->noteDuration = 1 << channel->bars[channel->currentBar]->notes[channel->currentNote].duration;
+
+        return 1;
+    }
+
+    return 0;
+}
+
+void reset_channel(Channel *channel) {
+    channel->currentBar = 0;
+    channel->currentNote = 0;
+    channel->noteCount = channel->bars[0]->count;
+    channel->noteDuration = 1 << channel->bars[0]->notes[0].duration;
+}
+
 void reset_program(Program *prog) {
-    int i,j;
+    int i;
+    prog->dirty = 0;
     for (i = 0; i < prog->count; i++) {
         Channel *chan = prog->channels[i];
-        chan->current = 0;
-        for (j = 0; j < chan->count; j++) {
-            Bar *bar = chan->bars[j];
-            bar->current = 0;
-        }
+        reset_channel(chan);
     }
 }
 

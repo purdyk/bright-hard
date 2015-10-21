@@ -13,15 +13,15 @@ void print_bar(Bar *bar) {
 }
 
 void print_channel(Channel *channel) {
-    printf("Channel contains %d bars\n", channel->count);
+    printf("Channel contains %d bars\n", channel->barCount);
 
-    for (int i = 0; i < channel->count; i++) {
+    for (int i = 0; i < channel->barCount; i++) {
         printf("Bar %d:", i);
         print_bar(channel->bars[i]);
     }
 }
 
-void print_program(Composition *prog) {
+void print_program(Program *prog) {
     printf("Program contains %d channels\n", prog->count);
     for (int i = 0; i < prog->count; i++) {
         printf("Channel %d:\n", i);
@@ -37,12 +37,29 @@ void print_data(Data *data) {
     }
 }
 
+void print_state(Program *program) {
+    for (int i = 0; i < program->count; i++) {
+        Channel *chan = program->channels[i];
+        printf("C:%d tb:%d cb:%d tn:%d cn:%d nd:%d", i, chan->barCount, chan->currentBar, chan->noteCount,
+         chan->currentNote, chan->noteDuration);
+    }
+    printf("\n");
+}
+
 int main(int argc, char **argv) {
     puts("Loading data from header.");
     Data *data = load_data();
     puts("data loaded.");
     print_data(data);
-    reset_program(&data->programs[0]);
+
+    Program *prog = &data->programs[1];
+    reset_program(prog);
+
+    for (int i = 0; i < 1000; i++) {
+        print_state(prog);
+        advance_program(prog);
+    }
+
 }
 
 #endif

@@ -15,7 +15,6 @@ typedef struct {
 
 typedef struct {
     uint16_t count;
-    uint16_t current;
     Note *notes;
 } Bar;
 
@@ -25,8 +24,11 @@ typedef struct {
  */
 
 typedef struct {
-    uint16_t count;
-    uint16_t current;
+    uint16_t barCount;
+    uint16_t currentBar;
+    uint16_t noteCount;
+    uint16_t currentNote;
+    uint16_t noteDuration;
     Bar **bars;
 } Channel;
 
@@ -38,6 +40,7 @@ typedef struct {
 typedef struct {
     char count;
     char mode;
+    char dirty;
     Channel **channels;
 } Program;
 
@@ -53,7 +56,11 @@ typedef struct {
 /* loader expects raw.h to include a program */
 Data *load_data();
 
+void advance_program(Program *prog);
+char advance_channel(Channel *channel);
+
 void reset_program(Program *prog);
+void reset_channel(Channel *channel);
 
 #endif
 

@@ -16,9 +16,12 @@
 #define STATUS_1 10
 #define STATUS_2 13
 
+#define MILLIS_PER_LOOP 16 // around 120 bpm.  good for testing for now.
+
 Data *data;
 Program *program;
 char mask;
+unsigned long loopStart;
 
 void setup() {
     // Initialize the pins as outputs
@@ -43,13 +46,21 @@ void setup() {
 
     data = load_data();
     program = &data->programs[1];
+    reset_program(program);
 }
 
 void loop() {
-    load_mask();
-    write();
-    advance();
-    delay(100);
+
+    loopStart = millis();
+
+    if (program->dirty) {
+        load_mask();
+        write_mask();
+    }
+    advance_program(program);
+
+    /* Hacky inaccurate delay code */
+    delay(MILLIS_PER_LOOP - (millis() - loopStart));
 }
 
 void load_mask() {
@@ -57,28 +68,11 @@ void load_mask() {
     int i;
     for (i = 0; i < program->count; i++) {
         Channel *chan = program->channels[i];
-        Bar *bar = chan->bars[chan->current];
-        mask |= bar->notes[bar->current].bitmask;
-        bar->current += 1;
+        mask |= chan->bars[chan->currentBar]->notes[chan->currentNote].bitmask;
     }
 }
 
-void advance() {
-    int i;
-    for (i = 0; i < program->count; i++) {
-        Channel *chan = program->channels[i];
-        Bar *bar = chan->bars[chan->current];
-        if (bar->current == bar->count) {
-            bar->current = 0;
-            chan->current += 1;
-            if (chan->current == chan->count) {
-                chan->current = 0;
-            }
-        }
-    }
-}
-
-void write() {
+void write_mask() {
     int i;
     for (i = FIRST; i < LOOP; i++) {
         if (mask & 1<<(i - FIRST)) {
