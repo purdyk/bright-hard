@@ -1,0 +1,1 @@
+gcc -DDEBUG -o test data.c test.c

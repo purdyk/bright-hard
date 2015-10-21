@@ -1,3 +1,5 @@
+#ifdef DEBUG
+
 #include "data.h"
 #include <stdio.h>
 
@@ -43,3 +45,4 @@ int main(int argc, char **argv) {
     reset_program(&data->programs[0]);
 }
 
+#endif
