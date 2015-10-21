@@ -42,7 +42,7 @@ void setup() {
     pinMode(19, INPUT);
 
     data = load_data();
-    composition = data.programs[0];
+    program = &data->programs[0];
 }
 
 /* Stub this for now */
@@ -54,13 +54,15 @@ void loop() {
 
 void load_mask() {
     mask = 0;
-    for (int i = 0; i < program->count; i++) {
+    int i;
+    for (i = 0; i < program->count; i++) {
 
     }
 }
 
 void write() {
-    for (int i = FIRST; i < LOOP; i++) {
+    int i;
+    for (i = FIRST; i < LOOP; i++) {
 
     }
 }
