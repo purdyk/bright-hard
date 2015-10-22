@@ -170,9 +170,7 @@ lsh(bar, fac) (left shift the bits by factor)
 
         for item in self.notes[start:start+count]:
             i2 = copy.copy(item)
-            print "bits before shift: {0:b} will lsh {1}".format(i2[3], args[0])
             i2[3] = self.llsh(i2[3], args[0])
-            print "bits after shift: {0:b}".format(i2[3])
             out.append(i2)
 
         return out
@@ -181,16 +179,8 @@ lsh(bar, fac) (left shift the bits by factor)
         if amount == 0:
             return value
         elif amount > 0:
-
             intermediary = value << amount
-            ret = intermediary & 255
-
-            print "intem {0:b}".format(ret)
-            soff = (intermediary >> 8)
-            print "soff {0:b}".format(soff)
-            ret = (ret & (soff & 255)) & 255
-
-            return ret
+            return ((intermediary | (intermediary >> 8)) & 255)
         else:
             intermediary = value
             while amount < 0:
@@ -286,7 +276,6 @@ lsh(bar, fac) (left shift the bits by factor)
 
     def generate_raw_channels(self):
         for chan in self.channels_l:
-            print chan
             total = chan["count"] + 1
             fmt = "H" * total
             self.raw_channels += struct.pack(fmt, total - 1, *chan["bars"])
@@ -295,7 +284,6 @@ lsh(bar, fac) (left shift the bits by factor)
 
     def generate_raw_programs(self):
         for prog in self.programs:
-            print prog
             total = prog["count"] + 1;
             fmt = "H" * total
             self.raw_progs += struct.pack(fmt, total - 1, *prog["channels"])
