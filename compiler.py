@@ -170,7 +170,9 @@ lsh(bar, fac) (left shift the bits by factor)
 
         for item in self.notes[start:start+count]:
             i2 = copy.copy(item)
+            print "bits before shift: {0:b} will lsh {1}".format(i2[3], args[0])
             i2[3] = self.llsh(i2[3], args[0])
+            print "bits after shift: {0:b}".format(i2[3])
             out.append(i2)
 
         return out
@@ -179,9 +181,15 @@ lsh(bar, fac) (left shift the bits by factor)
         if amount == 0:
             return value
         elif amount > 0:
+
             intermediary = value << amount
             ret = intermediary & 255
-            ret &= ((intermediary >> 8) & 255)
+
+            print "intem {0:b}".format(ret)
+            soff = (intermediary >> 8)
+            print "soff {0:b}".format(soff)
+            ret = (ret & (soff & 255)) & 255
+
             return ret
         else:
             intermediary = value
@@ -205,6 +213,8 @@ lsh(bar, fac) (left shift the bits by factor)
 
             chan_idx = []
 
+            self.expand_channels(channels)
+
             for channel in channels:
                 key = "".join(channel)
                 if key not in self.channels:
@@ -219,6 +229,17 @@ lsh(bar, fac) (left shift the bits by factor)
             self.programs.append(parsed_prog)
 
         return None
+
+    def expand_channels(self, channels):
+        for i in range(0, len(channels)):
+            chan = channels[i]
+            newchan = []
+            for bar in chan:
+                if type(bar) is list:
+                    newchan.extend(bar[0:-1] * bar[-1])
+                else:
+                    newchan.append(bar)
+            channels[i] = newchan
 
     def make_channel(self, parsed):
         chan = {
