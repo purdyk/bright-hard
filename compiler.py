@@ -29,8 +29,6 @@ class Compiler:
         self.note_format = "BBBB"
         self.bar_format = "HH"
 
-
-
         self.mods = {
             "rev": self.rev,
             "inv": self.inv,
@@ -38,7 +36,7 @@ class Compiler:
             "lsh": self.lsh,
         }
 
-        self.compile_steps = [self.make_bars, self.make_mods, self.make_programs];
+        self.compile_steps = [self.make_bars, self.make_mods, self.make_programs]
 
     def compile(self, filename):
         print "Compiling {0}".format(filename)
@@ -107,6 +105,9 @@ class Compiler:
 
         notes = self.map_mod(mod_name, mod_source, mod_args)
 
+        if type(notes) is str:
+            return notes
+
         bar_data = {
             "name": mod["name"],
             "count": len(notes),
@@ -123,23 +124,21 @@ class Compiler:
 
     def map_mod(self, name, source, args):
         if name in self.mods:
-            return self.mods[name](source, args)
+            return self.mods[name](source, *args)
         else:
-            return []
+            return "Mod %s unavailable".format(name)
 
-        '''
-        inv(bar) (flip bits on all of the notes)
-rev(bar) (reverse notes of the sourece bar)
-exp(bar, fac) (expand the bar by the factor)
-lsh(bar, fac) (left shift the bits by factor)
-'''
+    # inv(bar) (flip bits on all of the notes)
+    # rev(bar) (reverse notes of the source bar)
+    # exp(bar, fac) (expand the bar by the factor) (negative allowed)
+    # lsh(bar, fac) (left shift the bits by factor) (negative allowed)
 
-    def rev(self, source, args):
+    def rev(self, source):
         count = source["count"]
         start = source["start"]
         return self.notes[start:start+count][::-1]
 
-    def inv(self, source, args):
+    def inv(self, source):
         out = []
         count = source["count"]
         start = source["start"]
@@ -151,7 +150,7 @@ lsh(bar, fac) (left shift the bits by factor)
 
         return out
 
-    def exp(self, source, args):
+    def exp(self, source, *args):
         out = []
         count = source["count"]
         start = source["start"]
@@ -163,7 +162,7 @@ lsh(bar, fac) (left shift the bits by factor)
 
         return out
 
-    def lsh(self, source, args):
+    def lsh(self, source, *args):
         out = []
         count = source["count"]
         start = source["start"]
@@ -180,7 +179,7 @@ lsh(bar, fac) (left shift the bits by factor)
             return value
         elif amount > 0:
             intermediary = value << amount
-            return ((intermediary | (intermediary >> 8)) & 255)
+            return (intermediary | (intermediary >> 8)) & 255
         else:
             intermediary = value
             while amount < 0:
@@ -284,7 +283,7 @@ lsh(bar, fac) (left shift the bits by factor)
 
     def generate_raw_programs(self):
         for prog in self.programs:
-            total = prog["count"] + 1;
+            total = prog["count"] + 1
             fmt = "H" * total
             self.raw_progs += struct.pack(fmt, total - 1, *prog["channels"])
 
@@ -337,7 +336,8 @@ lsh(bar, fac) (left shift the bits by factor)
 if __name__ == "__main__":
 
     if len(sys.argv) < 2:
-        print "Usage:\n\t{0} <input> <output>\n\t\tinput: bthd file\n\t\toutput: optional .h file (default raw.h)".format(sys.argv[0])
+        print "Usage:\n\t{0} <input> <output>\n\t\tinput: bthd file\n\t\toutput: optional .h file (default raw.h)"\
+            .format(sys.argv[0])
         exit()
 
     compiler = Compiler()
