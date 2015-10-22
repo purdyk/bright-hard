@@ -16,8 +16,6 @@
 #define STATUS_1 10
 #define STATUS_2 13
 
-#define BPM 120
-
 Data *data;
 Program *program;
 char mask;
@@ -55,8 +53,10 @@ void setup() {
     TCCR0B = 0;// same for TCCR1B
     TCNT0 = 0;//initialize counter value to 0
 
-    // set compare match register for 64hz increments
-    OCR0A = 243;// = (16 * (10**6)) / (64 * 1024) - 1 (must be <65536)
+    // set compare match register for 64hz increments (120 bpm) (must be <65536)
+    // (16 * (10**6)) / (((bpm / 60.) * 32) * 1024) - 1
+    //  OCR0A = 243; // 120 bpm
+    OCR0A = 208; // 140 bpm
 
     // turn on CTC mode
     TCCR0B |= (1 << WGM02);
