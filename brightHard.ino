@@ -1,14 +1,35 @@
 #include "data.h"
 
-#define A  2
-#define B  3
-#define C  4
-#define D  5
-#define E  6
-#define F  7
-#define G  8
-#define H  9
+#define EL_A  2
+#define EL_B  3
+#define EL_C  4
+#define EL_D  5
+#define EL_E  6
+#define EL_F  7
+#define EL_G  8
+#define EL_H  9
 
+
+/*
+ * These pins are set up for headers on the side of the board
+ * Ideal for input, but could be used for output if ...
+ * who knows?
+ */
+
+/* Analog or Digital pins */
+#define EL_A2 21
+#define EL_A3 21
+#define EL_A4 21
+#define EL_A5 21
+
+/* Analog only pins */
+#define EL_A6 21
+#define EL_A7 21
+
+/*
+ *  Makes looping through the pins a little
+ *  nicer to read
+ */
 #define FIRST 2
 #define LAST 9
 #define LOOP 10
@@ -23,14 +44,14 @@ unsigned long loopStart;
 
 void setup() {
     // Initialize the pins as outputs
-    pinMode(A, OUTPUT);
-    pinMode(B, OUTPUT);
-    pinMode(C, OUTPUT);
-    pinMode(D, OUTPUT);
-    pinMode(E, OUTPUT);
-    pinMode(7, OUTPUT);
-    pinMode(G, OUTPUT);
-    pinMode(H, OUTPUT);
+    pinMode(EL_A, OUTPUT);
+    pinMode(EL_B, OUTPUT);
+    pinMode(EL_C, OUTPUT);
+    pinMode(EL_D, OUTPUT);
+    pinMode(EL_E, OUTPUT);
+    pinMode(EL_F, OUTPUT);
+    pinMode(EL_G, OUTPUT);
+    pinMode(EL_H, OUTPUT);
 
     // We also have two status LEDs, pin 10 on the Escudo,
     // and pin 13 on the Arduino itself
