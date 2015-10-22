@@ -37,6 +37,12 @@
 #define STATUS_1 10 // ???
 #define STATUS_2 13 // Board
 
+/*
+ * This flag is in the spec but not defined for some reason
+ */
+
+#define CTC1 3
+
 Data *data;
 Program *program;
 char mask;
@@ -70,32 +76,33 @@ void setup() {
     status_counter = 0;
 
     // Using a Timer at (1 / (bpm / 60)) / 8
-    // This gives us quarte-note beats which
+    // This gives us quarter-note beats which
     // I believe is pretty standard
-
-    // set timer interrupt at 64Hz
-    TCCR0A = 0;// set entire TCCR1A register to 0
-    TCCR0B = 0;// same for TCCR1B
-    TCNT0 = 0;//initialize counter value to 0
+    TCCR1A = 0;
+    TCCR1B = 0;
+    TCNT1 = 0;
 
     // set compare match register for increments (must be <65536)
-    // (16 * (10**6)) / (((bpm / 60.) * 8) * 1024) - 1
-    // 1171 // 100 bpm
-    OCR0A = 976; // 120 bpm
-    // OCR0A = 837; // 140 bpm
+    // clock speed   /   ( desired interval )  * ( prescalar ) - one cycle zero indexed
+    // ((((8 * (10**6)) / 64.) * ( 1 / (bpm / 60.))) / 8) - 1
+    // (Clock Speed / Prescalar) / (( bpm / spm ) / ( thrity-seconds ) - 1 zero start
+    //    OCR1A = 9374; // 100 bpm
+    //    OCR1A = 8522; // 110 bpm
+    OCR1A = 7812; // 120 bpm
+//     OCR1A = 6695; // 140 bpm
 
     // turn on CTC mode
-    TCCR0B |= (1 << WGM02);
+    TCCR1B |= _BV(CTC1);
 
-    // Set CS12 and CS10 bits for 1024 prescaler
-    TCCR0B |= (1 << CS02) | (1 << CS00);
+    // Set CS11 and CS10 bits for 256 prescalar
+    TCCR1B |= _BV(CS11) | _BV(CS10);
 
     // enable timer compare interrupt
-    TIMSK0 |= (1 << OCIE0A);
+    TIMSK1 |= _BV(OCIE1A);
 
 }
 
-ISR (TIMER0_COMPA_vect) { // Timer 0
+ISR (TIMER1_COMPA_vect) { // Timer 1 16 bit
 
     if (program->dirty) {
         load_mask();
