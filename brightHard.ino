@@ -34,13 +34,13 @@
 #define LAST 9
 #define LOOP 10
 
-#define STATUS_1 10
-#define STATUS_2 13
+#define STATUS_1 10 // ???
+#define STATUS_2 13 // Board
 
 Data *data;
 Program *program;
 char mask;
-unsigned long loopStart;
+unsigned short status_counter;
 
 void setup() {
     // Initialize the pins as outputs
@@ -67,17 +67,22 @@ void setup() {
     data = load_data();
     program = &data->programs[1];
     reset_program(program);
+    status_counter = 0;
 
-    // Using a Timer at (1 / (bpm / 60)) / 32
+    // Using a Timer at (1 / (bpm / 60)) / 8
+    // This gives us quarte-note beats which
+    // I believe is pretty standard
+
     // set timer interrupt at 64Hz
     TCCR0A = 0;// set entire TCCR1A register to 0
     TCCR0B = 0;// same for TCCR1B
     TCNT0 = 0;//initialize counter value to 0
 
-    // set compare match register for 64hz increments (120 bpm) (must be <65536)
-    // (16 * (10**6)) / (((bpm / 60.) * 32) * 1024) - 1
-    //  OCR0A = 243; // 120 bpm
-    OCR0A = 208; // 140 bpm
+    // set compare match register for increments (must be <65536)
+    // (16 * (10**6)) / (((bpm / 60.) * 8) * 1024) - 1
+    // 1171 // 100 bpm
+    OCR0A = 976; // 120 bpm
+    // OCR0A = 837; // 140 bpm
 
     // turn on CTC mode
     TCCR0B |= (1 << WGM02);
@@ -87,6 +92,7 @@ void setup() {
 
     // enable timer compare interrupt
     TIMSK0 |= (1 << OCIE0A);
+
 }
 
 ISR (TIMER0_COMPA_vect) { // Timer 0
@@ -96,6 +102,17 @@ ISR (TIMER0_COMPA_vect) { // Timer 0
         write_mask();
     }
     advance_program(program);
+
+    char mod = status_counter % 16;
+    if (mod == 0) {
+        digitalWrite(STATUS_2, HIGH);
+    }
+
+    if (mod == 4) {
+        digitalWrite(STATUS_2, LOW);
+    }
+
+    status_counter++;
 }
 
 void loop() {
