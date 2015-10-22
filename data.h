@@ -18,11 +18,6 @@ typedef struct {
     Note *notes;
 } Bar;
 
-/* 
- * allocated
- * helper loadBar maps note offset to first note 
- */
-
 typedef struct {
     uint16_t barCount;
     uint16_t currentBar;
@@ -32,21 +27,12 @@ typedef struct {
     Bar **bars;
 } Channel;
 
-/*
- * allocated
- * helper loadChannel maps all bars to actual pointers
- */
-
 typedef struct {
     char count;
     char mode;
     char dirty;
     Channel **channels;
 } Program;
-
-/*
- * healper loadComposition maps all channels to actual channels
- */
 
 typedef struct {
     uint16_t programCount;
